@@ -1,18 +1,37 @@
 import React from "react";
-import UploadForm from "./components/UploadForm";
-import ComicReader from "./components/ComicReader";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import ComicPage from "./pages/ComicPage";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <h1>My Comic Reader</h1>
+    <BrowserRouter>
+      <div className="app">
+        <header className="topbar">
+          <div className="brand">
+            <Link to="/">Comic Library</Link>
+          </div>
+          <nav className="nav">
+            <a href="#upload">Upload</a>
+            <a href="#library">Library</a>
+            <a href="http://localhost:4000/health" target="_blank" rel="noreferrer">Backend health</a>
+          </nav>
+        </header>
 
-      {/* Upload CBZ form */}
-      <UploadForm />
+        <main className="main">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/comic/:slug" element={<ComicPage />} />
+          </Routes>
+        </main>
 
-      {/* Example reader */}
-      <ComicReader comicId={1} />
-    </div>
+        <footer className="footer">
+          <span>Built for your personal collection.</span>
+          <a href="http://localhost:4000" rel="noreferrer">Backend</a>
+        </footer>
+      </div>
+    </BrowserRouter>
   );
 }
 
