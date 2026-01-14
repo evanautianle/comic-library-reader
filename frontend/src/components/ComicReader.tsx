@@ -1,28 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-interface ComicReaderProps {
+type Page = {
+  pageNumber: number;
+  url: string;
+};
+
+type Props = {
   comicId: number;
-  totalPages: number;
-}
+};
 
-export default function ComicReader({ comicId, totalPages }: ComicReaderProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+export default function ComicReader({ comicId }: Props) {
+  const [pages, setPages] = useState<Page[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const nextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-  const prevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
+  useEffect(() => {
+    fetch(`http://localhost:4000/pages/${comicId}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load pages");
+        return res.json();
+      })
+      .then(data => {
+        setPages(data.pages);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, [comicId]);
+
+  if (loading) return <p>Loading pages…</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <h2>Page {currentPage}</h2>
-      <img
-        src={`http://localhost:4000/pages/${comicId}/${currentPage}`}
-        alt={`Page ${currentPage}`}
-        style={{ maxWidth: "90%", maxHeight: "80vh" }}
-      />
-      <div style={{ marginTop: "20px" }}>
-        <button onClick={prevPage} disabled={currentPage === 1}>Prev</button>
-        <button onClick={nextPage} disabled={currentPage === totalPages}>Next</button>
-      </div>
+    <div style={{ maxWidth: 900, margin: "0 auto" }}>
+      {pages.map(page => (
+        <img
+          key={page.pageNumber}
+          src={`http://localhost:4000${page.url}`}
+          alt={`Page ${page.pageNumber}`}
+          style={{
+            width: "100%",
+            display: "block",
+            marginBottom: "1rem",
+          }}
+        />
+      ))}
     </div>
   );
 }

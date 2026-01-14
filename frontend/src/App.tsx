@@ -1,12 +1,17 @@
 import React from "react";
+import UploadForm from "./components/UploadForm";
 import ComicReader from "./components/ComicReader";
 
 function App() {
   return (
     <div className="App">
       <h1>My Comic Reader</h1>
-      {/* Example: comicId=1, totalPages=10 */}
-      <ComicReader comicId={1} totalPages={10} />
+
+      {/* Upload CBZ form */}
+      <UploadForm />
+
+      {/* Example reader */}
+      <ComicReader comicId={1} />
     </div>
   );
 }
