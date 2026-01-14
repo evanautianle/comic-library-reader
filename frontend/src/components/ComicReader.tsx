@@ -38,7 +38,6 @@ export default function ComicReader({ comicId }: Props) {
 
   if (loading) return <p>Loading pages…</p>;
 
-  if (!loading && pages.length === 0) return <p>No pages available.</p>;
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
