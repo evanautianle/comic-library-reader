@@ -17,6 +17,8 @@ const upload = multer({
 router.post("/", upload.single("comic"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file" });
 
+  console.log("📁 [STATIC] Uploading comic via static file system (no database)");
+  
   const slug = req.file.originalname.replace(".cbz", "");
   const extractPath = path.join("uploads/comics", slug);
 
@@ -25,13 +27,29 @@ router.post("/", upload.single("comic"), async (req, res) => {
   const zip = new AdmZip(req.file.path);
   zip.extractAllTo(extractPath, true);
 
-  // Cleanup uploaded ZIP
   fs.unlinkSync(req.file.path);
 
-  // List pages
-  const pages = fs.readdirSync(extractPath)
-    .filter(f => /\.(jpe?g|png)$/i.test(f))
-    .sort();
+  // some CBZ files have nested folders, need to search recursively
+  const findImageFiles = (dir: string, basePath: string = ""): string[] => {
+    const files: string[] = [];
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = basePath ? path.join(basePath, entry.name) : entry.name;
+      
+      if (entry.isDirectory()) {
+        files.push(...findImageFiles(fullPath, relativePath));
+      } else if (/\.(jpe?g|png|webp)$/i.test(entry.name)) {
+        // convert backslashes to forward slashes for URLs
+        files.push(relativePath.replace(/\\/g, "/"));
+      }
+    }
+    
+    return files;
+  };
+  
+  const pages = findImageFiles(extractPath).sort();
 
   res.json({
     message: "Upload successful",
@@ -40,8 +58,8 @@ router.post("/", upload.single("comic"), async (req, res) => {
   });
 });
 
-// GET /upload/list - list extracted comics and their pages
 router.get("/list", (_req, res) => {
+  console.log("📁 [STATIC] Listing comics from file system (no database)");
   const base = path.join("uploads", "comics");
   if (!fs.existsSync(base)) return res.json({ comics: [] });
 
@@ -49,11 +67,29 @@ router.get("/list", (_req, res) => {
     .filter(d => d.isDirectory())
     .map(d => d.name);
 
+  const findImageFiles = (dir: string, basePath: string = ""): string[] => {
+    const files: string[] = [];
+    if (!fs.existsSync(dir)) return files;
+    
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = basePath ? path.join(basePath, entry.name) : entry.name;
+      
+      if (entry.isDirectory()) {
+        files.push(...findImageFiles(fullPath, relativePath));
+      } else if (/\.(jpe?g|png|webp)$/i.test(entry.name)) {
+        files.push(relativePath.replace(/\\/g, "/"));
+      }
+    }
+    
+    return files;
+  };
+
   const comics = slugs.map(slug => {
     const dir = path.join(base, slug);
-    const pages = fs.readdirSync(dir)
-      .filter(f => /\.(jpe?g|png)$/i.test(f))
-      .sort();
+    const pages = findImageFiles(dir).sort();
     return { slug, pages };
   });
 

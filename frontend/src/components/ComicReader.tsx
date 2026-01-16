@@ -25,10 +25,7 @@ export default function ComicReader({ comicId }: Props) {
         setLoading(false);
       })
       .catch(err => {
-        // Don't show a user-facing error for page fetch failures.
-        // Log for debugging and show a friendly empty state instead.
-        // This prevents the UI from displaying "Failed to load pages" even
-        // when uploads are handled via the static `/upload` flow.
+        // just log it, don't show error to user since static uploads don't use this route
         // eslint-disable-next-line no-console
         console.warn("Could not load pages for comicId", comicId, err);
         setPages([]);

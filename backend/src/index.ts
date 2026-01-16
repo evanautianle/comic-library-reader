@@ -6,7 +6,14 @@ import comicRoutes from "./routes/comicRoutes";
 import pageRoutes from "./routes/pageRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 
-dotenv.config();
+const envPath = path.resolve(process.cwd(), ".env");
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.warn(`Warning: Could not load .env file from ${envPath}:`, result.error.message);
+} else if (result.parsed) {
+  console.log(`Loaded ${Object.keys(result.parsed).length} environment variables from ${envPath}`);
+}
 
 const app = express();
 
@@ -18,17 +25,39 @@ app.use(
   express.static(path.join(__dirname, "..", "uploads"))
 );
 
-// Routes
 app.use("/upload", uploadRoutes);
 app.use("/comics", comicRoutes);
 app.use("/pages", pageRoutes);
 
-// Health check
 app.get("/health", (_, res) => {
   res.json({ status: "ok" });
 });
 
-// Base route
+app.get("/health/db", async (_, res) => {
+  try {
+    const { prisma } = await import("./prismaClient");
+    await prisma.$queryRaw`SELECT 1`;
+    const userCount = await prisma.user.count();
+    const comicCount = await prisma.comic.count();
+    const pageCount = await prisma.page.count();
+    
+    res.json({
+      status: "connected",
+      database: "PostgreSQL",
+      tables: {
+        users: userCount,
+        comics: comicCount,
+        pages: pageCount,
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      status: "error",
+      error: error.message,
+    });
+  }
+});
+
 app.get("/", (_, res) => {
   res.send("Backend is running!");
 });

@@ -1,13 +1,25 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./generated/prisma";
 
-// Single Prisma client instance for the app (lazy-init)
 let _prisma: PrismaClient | null = null;
 
 export function getPrisma(): PrismaClient {
   if (!_prisma) {
-    _prisma = new PrismaClient();
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error(
+        "DATABASE_URL is not set in environment variables. " +
+        "Make sure .env file exists in the backend directory and index.ts loads it with dotenv.config()"
+      );
+    }
+    
+    _prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: databaseUrl,
+        },
+      },
+    });
 
-    // Optional: handle SIGINT to disconnect cleanly in dev
     if (process.env.NODE_ENV !== "production") {
       process.on("SIGINT", async () => {
         try {
@@ -21,5 +33,14 @@ export function getPrisma(): PrismaClient {
   return _prisma;
 }
 
-// Backwards-compatible named export
-export const prisma = getPrisma();
+// lazy init so dotenv loads first
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrisma();
+    const value = (client as any)[prop];
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
+  },
+});

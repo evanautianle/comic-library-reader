@@ -46,7 +46,6 @@ export default function UploadForm() {
     }
   };
 
-  // Fetch list of extracted comics so uploads persist across refresh
   const fetchList = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:4000/upload/list");
