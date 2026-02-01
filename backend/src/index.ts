@@ -2,9 +2,20 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
-import comicRoutes from "./routes/comicRoutes";
-import pageRoutes from "./routes/pageRoutes";
+import fs from "fs";
 import uploadRoutes from "./routes/uploadRoutes";
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "..", "uploads", "comics");
+const cbzDir = path.join(__dirname, "..", "uploads", "cbz");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log("📁 Created uploads/comics directory");
+}
+if (!fs.existsSync(cbzDir)) {
+  fs.mkdirSync(cbzDir, { recursive: true });
+  console.log("📁 Created uploads/cbz directory");
+}
 
 const envPath = path.resolve(process.cwd(), ".env");
 const result = dotenv.config({ path: envPath });
@@ -26,36 +37,9 @@ app.use(
 );
 
 app.use("/upload", uploadRoutes);
-app.use("/comics", comicRoutes);
-app.use("/pages", pageRoutes);
 
 app.get("/health", (_, res) => {
   res.json({ status: "ok" });
-});
-
-app.get("/health/db", async (_, res) => {
-  try {
-    const { prisma } = await import("./prismaClient");
-    await prisma.$queryRaw`SELECT 1`;
-    const userCount = await prisma.user.count();
-    const comicCount = await prisma.comic.count();
-    const pageCount = await prisma.page.count();
-    
-    res.json({
-      status: "connected",
-      database: "PostgreSQL",
-      tables: {
-        users: userCount,
-        comics: comicCount,
-        pages: pageCount,
-      },
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      status: "error",
-      error: error.message,
-    });
-  }
 });
 
 app.get("/", (_, res) => {

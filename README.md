@@ -1,32 +1,19 @@
 # Comic Library Reader
 
-A full-stack web application for managing and reading a personal comic collection.
+A local web app for reading digital comics. Upload CBZ files and read them in your browser.
 
-Users can upload legally owned digital comics (CBZ or image folders), organize them in a library, and read them in a web-based reader.
+## Setup
+
+```bash
+git clone <your-repo-url>
+cd comic-library-reader
+npm run install:all
+npm run dev
+```
+
+Open `http://localhost:3000` → Upload a CBZ → Read your comics.
 
 ## Tech Stack
 
-**Frontend**
-- React
-- TypeScript
-- Vite
+React + TypeScript frontend, Node.js + Express backend. 100% local storage, no database.
 
-**Backend**
-- Node.js
-- Express
-- TypeScript
-- Prisma
-
-**Database**
-- PostgreSQL
-
-## Features (Planned)
-- Upload CBZ comics
-- Extract and normalize comic pages
-- Library view with covers
-- 2D page-based reader
-- Reading progress tracking
-- 3D book reader (future)
-
-## Status
-🚧 In active development
