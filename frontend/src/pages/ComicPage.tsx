@@ -11,40 +11,23 @@ export default function ComicPage() {
   const { slug } = useParams<{ slug: string }>();
   const [comic, setComic] = useState<Comic | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const load = async () => {
-      if (!slug) return;
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await axios.get("http://localhost:4000/upload/list");
-        const match = (res.data.comics as Comic[] | undefined)?.find(c => c.slug === slug);
-        if (!match) {
-          setError("Comic not found or has no pages.");
-          setComic(null);
-        } else {
-          setComic(match);
-        }
-      } catch (err) {
-        console.error("Failed to load comic", err);
-        setError("Failed to load comic.");
-      } finally {
+    if (!slug) return;
+    
+    axios.get("http://localhost:4000/upload/list")
+      .then(res => {
+        const match = res.data.comics?.find((c: Comic) => c.slug === slug);
+        setComic(match || null);
         setLoading(false);
-      }
-    };
-
-    load();
+      })
+      .catch(() => {
+        setComic(null);
+        setLoading(false);
+      });
   }, [slug]);
 
-  if (!slug) {
-    return (
-      <div className="panel">
-        <p>Missing comic slug.</p>
-      </div>
-    );
-  }
+  if (!slug) return <div className="panel"><p>Missing comic slug.</p></div>;
 
   return (
     <div className="comic-page">
@@ -60,9 +43,9 @@ export default function ComicPage() {
       </header>
 
       <div className="panel">
-        {loading && <p>Loading pages…</p>}
-        {!loading && error && <p className="error">{error}</p>}
-        {!loading && !error && comic && (
+        {loading ? (
+          <p>Loading pages…</p>
+        ) : comic ? (
           <div className="page-grid">
             {comic.pages.map(page => (
               <img
@@ -73,6 +56,8 @@ export default function ComicPage() {
               />
             ))}
           </div>
+        ) : (
+          <p>Comic not found.</p>
         )}
       </div>
     </div>

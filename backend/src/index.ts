@@ -1,29 +1,16 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 import uploadRoutes from "./routes/uploadRoutes";
 
-// Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, "..", "uploads", "comics");
 const cbzDir = path.join(__dirname, "..", "uploads", "cbz");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log("📁 Created uploads/comics directory");
 }
 if (!fs.existsSync(cbzDir)) {
   fs.mkdirSync(cbzDir, { recursive: true });
-  console.log("📁 Created uploads/cbz directory");
-}
-
-const envPath = path.resolve(process.cwd(), ".env");
-const result = dotenv.config({ path: envPath });
-
-if (result.error) {
-  console.warn(`Warning: Could not load .env file from ${envPath}:`, result.error.message);
-} else if (result.parsed) {
-  console.log(`Loaded ${Object.keys(result.parsed).length} environment variables from ${envPath}`);
 }
 
 const app = express();
