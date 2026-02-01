@@ -59,6 +59,7 @@ router.get("/list", (_req, res) => {
   if (!fs.existsSync(base)) return res.json({ comics: [] });
 
   // Map each comic folder to an object with slug and pages
+  res.json({
     comics: fs.readdirSync(base, { withFileTypes: true })
       .filter(d => d.isDirectory())
       .map(d => ({
