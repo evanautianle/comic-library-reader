@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -38,18 +38,18 @@ export default function UploadForm() {
     }
   };
 
-  const fetchList = useCallback(async () => {
+  const fetchList = async () => {
     try {
       const res = await axios.get("http://localhost:4000/upload/list");
       setComics(res.data.comics || []);
     } catch (err) {
       setComics([]);
     }
-  }, []);
+  };
 
   useEffect(() => {
     fetchList();
-  }, [fetchList]);
+  }, []);
 
   return (
     <div className="upload-form">

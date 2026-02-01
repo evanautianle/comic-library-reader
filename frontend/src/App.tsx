@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Home from "./pages/Home";
 import ComicPage from "./pages/ComicPage";
@@ -15,7 +14,6 @@ function App() {
           <nav className="nav">
             <a href="#upload">Upload</a>
             <a href="#library">Library</a>
-            <a href="http://localhost:4000/health" target="_blank" rel="noreferrer">Backend health</a>
           </nav>
         </header>
 
@@ -28,7 +26,6 @@ function App() {
 
         <footer className="footer">
           <span>Built for your personal collection.</span>
-          <a href="http://localhost:4000" rel="noreferrer">Backend</a>
         </footer>
       </div>
     </BrowserRouter>

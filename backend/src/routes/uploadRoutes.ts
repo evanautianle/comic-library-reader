@@ -8,9 +8,7 @@ const router = Router();
 
 const upload = multer({
   dest: "uploads/cbz",
-  fileFilter: (_req, file, cb) => {
-    cb(null, file.originalname.endsWith(".cbz"));
-  },
+  fileFilter: (_, file, cb) => cb(null, file.originalname.endsWith(".cbz")),
 });
 
 const findImageFiles = (dir: string, basePath: string = ""): string[] => {

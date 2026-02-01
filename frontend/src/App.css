@@ -84,10 +84,7 @@ a {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  align-items: center;
+  display: block;
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.05)),
     var(--panel);
   border: 1px solid var(--border);
@@ -103,7 +100,7 @@ a {
 }
 
 .hero__badge {
-  justify-self: end;
+  display: none;
 }
 
 .badge-card {

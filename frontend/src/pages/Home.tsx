@@ -5,24 +5,13 @@ export default function Home() {
     <div className="home">
       <section className="hero">
         <div className="hero__content">
-          <p className="eyebrow">Comic Library</p>
-          <h1>Upload, organize, and read your comics in seconds.</h1>
+          <h1>Your Comic Library</h1>
           <p className="lede">
-            Drop a CBZ, get instant previews, and open the reader in its own page. No extra steps,
-            no clutter.
+            Upload CBZ files, read them instantly. Simple, private, local.
           </p>
           <div className="hero__actions">
-            <a className="btn primary" href="#upload">Upload a comic</a>
-            <a className="btn ghost" href="#library">Browse library</a>
-          </div>
-        </div>
-        <div className="hero__badge">
-          <div className="badge-card">
-            <div className="badge-card__title">Fast import</div>
-            <div className="badge-card__meta">CBZ · JPG · PNG</div>
-            <div className="badge-card__body">
-              Extracts pages server-side and serves them statically for quick reading.
-            </div>
+            <a className="btn primary" href="#upload">Upload</a>
+            <a className="btn ghost" href="#library">View Library</a>
           </div>
         </div>
       </section>
@@ -30,9 +19,8 @@ export default function Home() {
       <section id="upload" className="panel">
         <div className="panel__header">
           <div>
-            <p className="eyebrow">Uploader</p>
-            <h2>Drop in a new CBZ</h2>
-            <p className="muted">We’ll extract it and make it available in the library instantly.</p>
+            <h2>Add Comics</h2>
+            <p className="muted">Upload a CBZ file and it will be ready to read.</p>
           </div>
         </div>
         <UploadForm />
